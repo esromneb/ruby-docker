@@ -9,7 +9,7 @@ FROM ruby:$RUBY_VERSION-slim-buster
 
 ARG YARN_VERSION=1.13.0
 ARG PG_MAJOR=13
-ARG NODE_MAJOR=11
+ARG NODE_MAJOR=14
 ARG BUNDLER_VERSION=2.0.2
 
 
@@ -46,7 +46,7 @@ RUN curl -sSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
   && echo 'deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main' $PG_MAJOR > /etc/apt/sources.list.d/pgdg.list
 
 # Add NodeJS to sources list
-RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_$NODE_MAJOR.x | bash -
 
 # Add Yarn to the sources list
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
@@ -65,7 +65,7 @@ RUN apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get -yq dist-upgrad
 # Application dependencies
 # We use an external Aptfile for that, stay tuned
 COPY Aptfile /tmp/Aptfile
-RUN apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get -yq dist-upgrade && echo \
+RUN apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get -yq dist-upgrade && \
   DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
     libpq-dev \
     postgresql-client-$PG_MAJOR \
@@ -89,7 +89,7 @@ ENV LANG=C.UTF-8 \
 
 # Upgrade RubyGems and install required Bundler version
 RUN gem update --system && \
-    gem install bundler:$BUNDLER_VERSION
+    gem install bundler:$BUNDLER_VERSION && gem install rails
 
 ENV PORT 3000
 
