@@ -7,6 +7,7 @@ FROM ruby:$RUBY_VERSION-slim-buster
 # after from, all args are reset, seems like maybe args used in the from are exempt!? very weird!
 # https://github.com/moby/moby/issues/34129
 
+# Yarn can go to 1.22.5
 ARG YARN_VERSION=1.13.0
 ARG PG_MAJOR=13
 ARG NODE_MAJOR=14
@@ -67,6 +68,7 @@ RUN apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get -yq dist-upgrad
 COPY Aptfile /tmp/Aptfile
 RUN apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get -yq dist-upgrade && \
   DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
+    libsqlite3-dev \
     libpq-dev \
     postgresql-client-$PG_MAJOR \
     nodejs \
@@ -99,3 +101,7 @@ EXPOSE $PORT
 # RUN mkdir -p /app
 
 WORKDIR /src
+
+
+RUN gem install sqlite3 -v '1.4.2' --source 'https://rubygems.org/'
+
